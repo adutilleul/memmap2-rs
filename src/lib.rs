@@ -162,6 +162,7 @@ pub struct MmapOptions {
     populate: bool,
     no_reserve_swap: bool,
     no_probe_handle: bool,
+    jit: bool,
 }
 
 impl MmapOptions {
@@ -301,6 +302,27 @@ impl MmapOptions {
     /// ```
     pub fn stack(&mut self) -> &mut Self {
         self.stack = true;
+        self
+    }
+
+
+    /// Configures the anonymous memory map to be suitable for code execution on MacOS.
+    ///
+    /// This option corresponds to the `MAP_JIT` flag on MacOS. It has no effect elsewhere.
+    ///s
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use memmap2::MmapOptions;
+    ///
+    /// # fn main() -> std::io::Result<()> {
+    /// let jit = MmapOptions::new().jit().len(4096).map_anon();
+    /// # Ok(())
+    /// # }
+    /// ```
+    pub fn jit(&mut self) -> &mut Self {
+        self.jit = true;
         self
     }
 
@@ -672,6 +694,7 @@ impl MmapOptions {
             self.populate,
             self.huge,
             self.no_reserve_swap,
+            self.jit,
         )
         .map(|inner| MmapMut { inner })
     }
