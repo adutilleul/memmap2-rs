@@ -42,6 +42,12 @@ const MAP_HUGE_MASK: libc::c_int = 0;
 #[cfg(not(any(target_os = "linux", target_os = "android")))]
 const MAP_HUGE_SHIFT: libc::c_int = 0;
 
+#[cfg(not(target_os = "linux"))]
+const MAP_JIT: libc::c_int = libc::MAP_JIT;
+
+#[cfg(target_os = "linux")]
+const MAP_JIT: libc::c_int = 0;
+
 #[cfg(any(
     target_os = "android",
     all(target_os = "linux", not(target_env = "musl"))
@@ -280,6 +286,7 @@ impl MmapInner {
         stack: bool,
         populate: bool,
         huge: Option<u8>,
+        jit: bool,
     ) -> io::Result<MmapInner> {
         let stack = if stack { MAP_STACK } else { 0 };
         let populate = if populate { MAP_POPULATE } else { 0 };
@@ -287,10 +294,11 @@ impl MmapInner {
         let offset = huge.map_or(0, |mask| {
             (u64::from(mask) & (MAP_HUGE_MASK as u64)) << MAP_HUGE_SHIFT
         });
+        let jit  = if jit { MAP_JIT } else { 0 };
         MmapInner::new(
             len,
             libc::PROT_READ | libc::PROT_WRITE,
-            libc::MAP_PRIVATE | libc::MAP_ANON | stack | populate | hugetlb,
+            libc::MAP_PRIVATE | libc::MAP_ANON | stack | populate | hugetlb | jit,
             -1,
             offset,
         )
