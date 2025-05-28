@@ -294,11 +294,11 @@ impl MmapInner {
         let offset = huge.map_or(0, |mask| {
             (u64::from(mask) & (MAP_HUGE_MASK as u64)) << MAP_HUGE_SHIFT
         });
-        let jit  = if jit { MAP_JIT } else { 0 };
+        let jit = if jit { MAP_JIT } else { 0 };
         MmapInner::new(
             len,
             libc::PROT_READ | libc::PROT_WRITE,
-            libc::MAP_PRIVATE | libc::MAP_ANON | stack | populate | hugetlb | jit,
+            libc::MAP_SHARED | libc::MAP_ANON | stack | populate | hugetlb | jit,
             -1,
             offset,
         )
