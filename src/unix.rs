@@ -359,11 +359,11 @@ impl MmapInner {
             (u64::from(mask) & (MAP_HUGE_MASK as u64)) << MAP_HUGE_SHIFT
         }) as i32;
         let no_reserve = if no_reserve { MAP_NORESERVE } else { 0 };
-        let jit  = if jit { MAP_JIT } else { 0 };
+        let jit = if jit { MAP_JIT } else { 0 };
         MmapInner::new(
             len,
             libc::PROT_READ | libc::PROT_WRITE,
-            libc::MAP_PRIVATE
+            libc::MAP_SHARED
                 | libc::MAP_ANON
                 | stack
                 | populate
