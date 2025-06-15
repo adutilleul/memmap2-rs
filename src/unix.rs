@@ -363,7 +363,7 @@ impl MmapInner {
         MmapInner::new(
             len,
             libc::PROT_READ | libc::PROT_WRITE,
-            libc::MAP_SHARED
+            libc::MAP_PRIVATE
                 | libc::MAP_ANON
                 | stack
                 | populate
